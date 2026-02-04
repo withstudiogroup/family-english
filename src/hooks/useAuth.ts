@@ -2,120 +2,89 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
-import type { User as AppUser } from "@/lib/supabase/types";
+
+export type UserLevel = "beginner" | "intermediate" | "advanced";
+export type AccountType = "parent" | "child";
+
+export interface UserProfile {
+  id: string;
+  username: string;
+  account_type: AccountType;
+  level: UserLevel;
+}
+
+const USER_STORAGE_KEY = "family_english_user";
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<AppUser | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        setProfile(profile);
+    // localStorage에서 사용자 정보 복원
+    const stored = localStorage.getItem(USER_STORAGE_KEY);
+    if (stored) {
+      try {
+        setProfile(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem(USER_STORAGE_KEY);
       }
-
-      setLoading(false);
-    };
-
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-          setProfile(profile);
-        } else {
-          setProfile(null);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
-  const signUp = async (username: string, pinCode: string, accountType: "parent" | "child") => {
-    // 이메일 형식으로 변환 (Supabase Auth는 이메일 필요)
-    const email = `${username.toLowerCase().replace(/\s/g, "_")}@familyenglish.local`;
+  const signIn = async (username: string, pinCode: string) => {
+    // users 테이블에서 직접 조회
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .eq("pin_code", pinCode)
+      .single();
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: pinCode.padEnd(6, "0"), // 최소 6자리 필요
-    });
-
-    if (error) throw error;
-
-    if (data.user) {
-      // 프로필 생성
-      const { error: profileError } = await supabase
-        .from("users")
-        .insert({
-          id: data.user.id,
-          username,
-          pin_code: pinCode,
-          account_type: accountType,
-          level: "beginner",
-        });
-
-      if (profileError) throw profileError;
+    if (error || !data) {
+      throw new Error("이름 또는 비밀번호가 일치하지 않아요");
     }
 
-    return data;
+    const user: UserProfile = {
+      id: data.id,
+      username: data.username,
+      account_type: data.account_type,
+      level: data.level,
+    };
+
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    setProfile(user);
+    return user;
   };
 
-  const signIn = async (username: string, pinCode: string) => {
-    const email = `${username.toLowerCase().replace(/\s/g, "_")}@familyenglish.local`;
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pinCode.padEnd(6, "0"),
-    });
-
-    if (error) throw error;
-    return data;
+  const signOut = () => {
+    localStorage.removeItem(USER_STORAGE_KEY);
+    setProfile(null);
   };
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  };
-
-  const updateLevel = async (level: "beginner" | "intermediate" | "advanced") => {
-    if (!user) throw new Error("Not authenticated");
+  const updateLevel = async (level: UserLevel) => {
+    if (!profile) throw new Error("Not authenticated");
 
     const { error } = await supabase
       .from("users")
       .update({ level })
-      .eq("id", user.id);
+      .eq("id", profile.id);
 
     if (error) throw error;
 
-    setProfile(prev => prev ? { ...prev, level } : null);
+    const updatedProfile = { ...profile, level };
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedProfile));
+    setProfile(updatedProfile);
   };
 
   return {
-    user,
+    user: profile,
     profile,
     loading,
-    signUp,
     signIn,
     signOut,
     updateLevel,
+    isAuthenticated: !!profile,
   };
 }
