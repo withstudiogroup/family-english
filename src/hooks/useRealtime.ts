@@ -23,6 +23,8 @@ export function useRealtime(options: UseRealtimeOptions) {
   const [isRecording, setIsRecording] = useState(false);
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [hasMicrophone, setHasMicrophone] = useState(true);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const dataChannel = useRef<RTCDataChannel | null>(null);
@@ -81,10 +83,20 @@ export function useRealtime(options: UseRealtimeOptions) {
         setIsAiSpeaking(true);
       };
 
-      // 4. 마이크 입력 설정
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStream.current = stream;
-      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+      // 4. 마이크 입력 설정 (마이크가 없어도 텍스트로 사용 가능)
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStream.current = stream;
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+        console.log("Microphone connected successfully");
+        setHasMicrophone(true);
+      } catch (micError) {
+        console.warn("Microphone not available:", micError);
+        setHasMicrophone(false);
+        setConnectionError("마이크를 찾을 수 없습니다. 마이크 권한을 확인해주세요.");
+        // 마이크 없으면 연결 중단
+        throw new Error("마이크가 필요합니다");
+      }
 
       // 5. 데이터 채널 설정 (텍스트 통신용)
       const dc = pc.createDataChannel("oai-events");
@@ -257,6 +269,8 @@ Start by greeting the student and setting up the scenario context in English.`,
     isRecording,
     isAiSpeaking,
     messages,
+    hasMicrophone,
+    connectionError,
     connect,
     disconnect,
     toggleRecording,

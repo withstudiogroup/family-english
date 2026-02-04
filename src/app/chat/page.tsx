@@ -62,6 +62,8 @@ function ChatContent() {
     isConnected,
     isRecording,
     isAiSpeaking,
+    hasMicrophone,
+    connectionError,
     connect,
     disconnect,
     toggleRecording,
@@ -204,17 +206,28 @@ function ChatContent() {
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center mb-4 animate-pulse-soft"
               style={{
-                background: "linear-gradient(135deg, var(--coral-light) 0%, var(--coral) 100%)"
+                background: connectionError
+                  ? "linear-gradient(135deg, var(--error) 0%, #C62828 100%)"
+                  : "linear-gradient(135deg, var(--coral-light) 0%, var(--coral) 100%)"
               }}
             >
-              <span className="text-4xl">🎤</span>
+              <span className="text-4xl">{connectionError ? "⚠️" : "🎤"}</span>
             </div>
             <p
-              className="font-medium"
-              style={{ color: "var(--text-secondary)" }}
+              className="font-medium text-center px-4"
+              style={{ color: connectionError ? "var(--error)" : "var(--text-secondary)" }}
             >
-              AI 선생님을 연결하는 중...
+              {connectionError || "AI 선생님을 연결하는 중..."}
             </p>
+            {connectionError && (
+              <button
+                onClick={() => connect()}
+                className="mt-4 px-6 py-2 rounded-xl font-medium text-white transition-all hover:scale-105"
+                style={{ background: "var(--coral)" }}
+              >
+                다시 시도
+              </button>
+            )}
           </div>
         )}
 
