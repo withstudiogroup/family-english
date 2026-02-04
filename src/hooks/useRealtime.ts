@@ -45,16 +45,39 @@ export function useRealtime(options: UseRealtimeOptions) {
       const { client_secret } = await tokenResponse.json();
 
       // 2. WebRTC 연결 설정
-      const pc = new RTCPeerConnection();
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      });
       peerConnection.current = pc;
 
-      // 3. 오디오 출력 설정
-      const audio = new Audio();
+      // ICE 연결 상태 모니터링
+      pc.oniceconnectionstatechange = () => {
+        console.log("ICE connection state:", pc.iceConnectionState);
+        if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
+          onError?.("연결이 끊어졌습니다. 다시 시도해주세요.");
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        console.log("Connection state:", pc.connectionState);
+      };
+
+      // 3. 오디오 출력 설정 (모바일 브라우저 호환)
+      const audio = document.createElement("audio");
       audio.autoplay = true;
+      audio.setAttribute("playsinline", "true");
+      audio.setAttribute("webkit-playsinline", "true");
+      audio.style.display = "none";
+      document.body.appendChild(audio);
       audioElement.current = audio;
 
       pc.ontrack = (event) => {
+        console.log("Audio track received:", event.streams[0]);
         audio.srcObject = event.streams[0];
+        // 모바일에서 오디오 재생 시작
+        audio.play().catch((e) => {
+          console.log("Audio play failed, will retry on user interaction:", e);
+        });
         setIsAiSpeaking(true);
       };
 
@@ -170,14 +193,19 @@ Start by greeting the student and setting up the scenario context in English.`,
     mediaStream.current?.getTracks().forEach((track) => track.stop());
     mediaStream.current = null;
 
-    // 오디오 정지
+    // 오디오 정지 및 DOM에서 제거
     if (audioElement.current) {
+      audioElement.current.pause();
       audioElement.current.srcObject = null;
+      audioElement.current.remove();
+      audioElement.current = null;
     }
 
     // WebRTC 연결 종료
     dataChannel.current?.close();
     peerConnection.current?.close();
+    dataChannel.current = null;
+    peerConnection.current = null;
 
     setIsConnected(false);
     setIsRecording(false);
