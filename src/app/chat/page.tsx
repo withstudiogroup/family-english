@@ -238,20 +238,21 @@ function ChatContent() {
               </button>
             )}
 
-            {/* 디버그 로그 표시 */}
-            {debugLogs.length > 0 && (
-              <div className="mt-6 w-full max-w-md px-4">
-                <div
-                  className="p-3 rounded-xl text-xs font-mono overflow-auto max-h-48"
-                  style={{ background: "#1a1a2e", color: "#10b981" }}
-                >
-                  <p className="font-bold mb-2 text-yellow-400">📋 연결 로그:</p>
-                  {debugLogs.map((log, i) => (
-                    <p key={i} className="py-0.5">{log}</p>
-                  ))}
-                </div>
-              </div>
-            )}
+          </div>
+        )}
+
+        {/* 디버그 로그 표시 (항상 표시) */}
+        {debugLogs.length > 0 && (
+          <div className="fixed bottom-32 left-4 right-4 z-50">
+            <div
+              className="p-3 rounded-xl text-xs font-mono overflow-auto max-h-40 mx-auto max-w-md"
+              style={{ background: "#1a1a2e", color: "#10b981" }}
+            >
+              <p className="font-bold mb-2 text-yellow-400">📋 연결 로그:</p>
+              {debugLogs.map((log, i) => (
+                <p key={i} className="py-0.5">{log}</p>
+              ))}
+            </div>
           </div>
         )}
 
