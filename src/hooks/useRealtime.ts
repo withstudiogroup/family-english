@@ -78,14 +78,18 @@ export function useRealtime(options: UseRealtimeOptions) {
 
       // ICE 연결 상태 모니터링
       pc.oniceconnectionstatechange = () => {
-        console.log("ICE connection state:", pc.iceConnectionState);
+        addLog(`ICE 상태: ${pc.iceConnectionState}`);
         if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
           onError?.("연결이 끊어졌습니다. 다시 시도해주세요.");
         }
       };
 
       pc.onconnectionstatechange = () => {
-        console.log("Connection state:", pc.connectionState);
+        addLog(`연결 상태: ${pc.connectionState}`);
+      };
+
+      pc.onicegatheringstatechange = () => {
+        addLog(`ICE 수집: ${pc.iceGatheringState}`);
       };
 
       // 3. 오디오 출력 설정 (모바일 브라우저 호환)
@@ -98,11 +102,13 @@ export function useRealtime(options: UseRealtimeOptions) {
       audioElement.current = audio;
 
       pc.ontrack = (event) => {
-        console.log("Audio track received:", event.streams[0]);
+        addLog("🔊 오디오 트랙 수신!");
         audio.srcObject = event.streams[0];
         // 모바일에서 오디오 재생 시작
-        audio.play().catch((e) => {
-          console.log("Audio play failed, will retry on user interaction:", e);
+        audio.play().then(() => {
+          addLog("✅ 오디오 재생 시작");
+        }).catch((e) => {
+          addLog(`⚠️ 오디오 재생 대기: ${e.message}`);
         });
         setIsAiSpeaking(true);
       };
@@ -142,10 +148,12 @@ export function useRealtime(options: UseRealtimeOptions) {
       }
 
       // 5. 데이터 채널 설정 (텍스트 통신용)
+      addLog("5단계: 데이터 채널 생성...");
       const dc = pc.createDataChannel("oai-events");
       dataChannel.current = dc;
 
       dc.onopen = () => {
+        addLog("✅ 데이터 채널 열림!");
         // 시스템 프롬프트 전송
         const systemPrompt = {
           type: "session.update",
@@ -170,13 +178,24 @@ Start by greeting the student and setting up the scenario context in English.`,
           },
         };
         dc.send(JSON.stringify(systemPrompt));
+        addLog("시스템 프롬프트 전송 완료");
 
         // 응답 생성 요청
         dc.send(JSON.stringify({ type: "response.create" }));
+        addLog("응답 생성 요청 전송");
+      };
+
+      dc.onerror = (error) => {
+        addLog(`❌ 데이터 채널 에러: ${error}`);
+      };
+
+      dc.onclose = () => {
+        addLog("데이터 채널 닫힘");
       };
 
       dc.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        addLog(`📨 수신: ${data.type}`);
 
         switch (data.type) {
           case "response.audio_transcript.done":
@@ -208,6 +227,7 @@ Start by greeting the student and setting up the scenario context in English.`,
             break;
 
           case "error":
+            addLog(`❌ API 에러: ${data.error?.message || JSON.stringify(data)}`);
             onError?.(data.error?.message || "Unknown error");
             break;
         }
