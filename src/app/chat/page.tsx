@@ -76,11 +76,19 @@ function ChatContent() {
     onError: handleError,
   });
 
-  // Connect on mount
+  // Connect on mount (한 번만 실행)
+  const hasConnected = useRef(false);
   useEffect(() => {
+    if (hasConnected.current) return;
+    hasConnected.current = true;
     connect();
-    return () => disconnect();
-  }, [connect, disconnect]);
+
+    return () => {
+      disconnect();
+      hasConnected.current = false;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Auto scroll to bottom
   useEffect(() => {
