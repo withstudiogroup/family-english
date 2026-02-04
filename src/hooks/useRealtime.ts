@@ -158,6 +158,7 @@ export function useRealtime(options: UseRealtimeOptions) {
         const systemPrompt = {
           type: "session.update",
           session: {
+            modalities: ["text", "audio"],
             instructions: `You are a friendly English teacher helping a Korean family learn English through role-play scenarios.
 
 Current scenario: "${scenario}"
@@ -174,7 +175,15 @@ Important guidelines:
 
 Start by greeting the student and setting up the scenario context in English.`,
             voice: "alloy",
+            input_audio_format: "pcm16",
+            output_audio_format: "pcm16",
             input_audio_transcription: { model: "whisper-1" },
+            turn_detection: {
+              type: "server_vad",
+              threshold: 0.5,
+              prefix_padding_ms: 300,
+              silence_duration_ms: 500,
+            },
           },
         };
         dc.send(JSON.stringify(systemPrompt));
@@ -222,8 +231,20 @@ Start by greeting the student and setting up the scenario context in English.`,
             onMessage?.(userMessage);
             break;
 
+          case "conversation.item.input_audio_transcription.failed":
+            addLog(`❌ 음성인식 실패: ${data.error?.message || JSON.stringify(data.error)}`);
+            break;
+
+          case "response.audio.delta":
+            // 오디오 데이터 수신 중
+            break;
+
           case "response.audio.done":
             setIsAiSpeaking(false);
+            break;
+
+          case "response.output_item.added":
+            addLog("🎤 AI 응답 시작");
             break;
 
           case "error":
