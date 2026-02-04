@@ -95,21 +95,38 @@ export function useRealtime(options: UseRealtimeOptions) {
       // 3. 오디오 출력 설정 (모바일 브라우저 호환)
       const audio = document.createElement("audio");
       audio.autoplay = true;
+      audio.muted = false;
+      audio.volume = 1.0;
       audio.setAttribute("playsinline", "true");
       audio.setAttribute("webkit-playsinline", "true");
-      audio.style.display = "none";
+      audio.style.cssText = "position:fixed;top:-1000px;left:-1000px;";
       document.body.appendChild(audio);
       audioElement.current = audio;
 
+      // 오디오 수신용 트랜시버 추가
+      pc.addTransceiver("audio", { direction: "recvonly" });
+
       pc.ontrack = (event) => {
         addLog("🔊 오디오 트랙 수신!");
-        audio.srcObject = event.streams[0];
+        addLog(`트랙 종류: ${event.track.kind}, 상태: ${event.track.readyState}`);
+
+        const stream = event.streams[0];
+        audio.srcObject = stream;
+
         // 모바일에서 오디오 재생 시작
-        audio.play().then(() => {
-          addLog("✅ 오디오 재생 시작");
-        }).catch((e) => {
-          addLog(`⚠️ 오디오 재생 대기: ${e.message}`);
-        });
+        const playAudio = () => {
+          audio.play().then(() => {
+            addLog("✅ 오디오 재생 성공!");
+          }).catch((e) => {
+            addLog(`⚠️ 오디오 재생 실패: ${e.message}`);
+            // 사용자 인터랙션 대기
+            document.addEventListener("click", () => {
+              audio.play().then(() => addLog("✅ 클릭 후 오디오 재생 성공"));
+            }, { once: true });
+          });
+        };
+
+        playAudio();
         setIsAiSpeaking(true);
       };
 
@@ -131,6 +148,7 @@ export function useRealtime(options: UseRealtimeOptions) {
         });
         addLog("마이크 연결 성공!");
         setHasMicrophone(true);
+        setIsRecording(true); // 마이크 기본 활성화
       } catch (micError: unknown) {
         const errorMessage = micError instanceof Error ? micError.message : String(micError);
         const errorName = micError instanceof Error ? micError.name : "Unknown";
@@ -159,6 +177,7 @@ export function useRealtime(options: UseRealtimeOptions) {
           type: "session.update",
           session: {
             modalities: ["text", "audio"],
+            voice: "alloy",
             instructions: `You are a friendly English teacher helping a Korean family learn English through role-play scenarios.
 
 Current scenario: "${scenario}"
@@ -174,9 +193,6 @@ Important guidelines:
 - Be encouraging and supportive
 
 Start by greeting the student and setting up the scenario context in English.`,
-            voice: "alloy",
-            input_audio_format: "pcm16",
-            output_audio_format: "pcm16",
             input_audio_transcription: { model: "whisper-1" },
             turn_detection: {
               type: "server_vad",
@@ -232,7 +248,7 @@ Start by greeting the student and setting up the scenario context in English.`,
             break;
 
           case "conversation.item.input_audio_transcription.failed":
-            addLog(`❌ 음성인식 실패: ${data.error?.message || JSON.stringify(data.error)}`);
+            addLog(`❌ 음성인식 실패: ${JSON.stringify(data)}`);
             break;
 
           case "response.audio.delta":
