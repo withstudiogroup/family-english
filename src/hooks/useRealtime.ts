@@ -38,13 +38,30 @@ export function useRealtime(options: UseRealtimeOptions) {
   };
 
   const connect = useCallback(async () => {
+    setConnectionError(null);
+    console.log("=== Starting connection ===");
+
     try {
       // 1. 세션 토큰 가져오기
+      console.log("Step 1: Getting session token...");
       const tokenResponse = await fetch("/api/realtime/session");
+      console.log("Token response status:", tokenResponse.status);
+
       if (!tokenResponse.ok) {
-        throw new Error("Failed to get session token");
+        const errorText = await tokenResponse.text();
+        console.error("Token error:", errorText);
+        throw new Error("세션 토큰을 가져올 수 없습니다");
       }
-      const { client_secret } = await tokenResponse.json();
+
+      const sessionData = await tokenResponse.json();
+      console.log("Session data received:", sessionData.id ? "Yes" : "No");
+
+      if (!sessionData.client_secret) {
+        console.error("No client_secret in response:", sessionData);
+        throw new Error("세션 토큰이 올바르지 않습니다");
+      }
+
+      const { client_secret } = sessionData;
 
       // 2. WebRTC 연결 설정
       const pc = new RTCPeerConnection({
@@ -83,19 +100,38 @@ export function useRealtime(options: UseRealtimeOptions) {
         setIsAiSpeaking(true);
       };
 
-      // 4. 마이크 입력 설정 (마이크가 없어도 텍스트로 사용 가능)
+      // 4. 마이크 입력 설정
+      console.log("Step 4: Requesting microphone access...");
+      console.log("navigator.mediaDevices available:", !!navigator.mediaDevices);
+
       try {
+        // 먼저 사용 가능한 오디오 장치 확인
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputs = devices.filter(d => d.kind === "audioinput");
+        console.log("Available audio inputs:", audioInputs.length, audioInputs.map(d => d.label || "unnamed"));
+
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaStream.current = stream;
-        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+        stream.getTracks().forEach((track) => {
+          console.log("Adding audio track:", track.label, track.readyState);
+          pc.addTrack(track, stream);
+        });
         console.log("Microphone connected successfully");
         setHasMicrophone(true);
-      } catch (micError) {
-        console.warn("Microphone not available:", micError);
+      } catch (micError: unknown) {
+        const errorMessage = micError instanceof Error ? micError.message : String(micError);
+        const errorName = micError instanceof Error ? micError.name : "Unknown";
+        console.error("Microphone error:", errorName, errorMessage);
         setHasMicrophone(false);
-        setConnectionError("마이크를 찾을 수 없습니다. 마이크 권한을 확인해주세요.");
-        // 마이크 없으면 연결 중단
-        throw new Error("마이크가 필요합니다");
+
+        if (errorName === "NotFoundError") {
+          setConnectionError("마이크를 찾을 수 없습니다. 마이크가 연결되어 있는지 확인해주세요.");
+        } else if (errorName === "NotAllowedError") {
+          setConnectionError("마이크 권한이 거부되었습니다. 브라우저 설정에서 마이크를 허용해주세요.");
+        } else {
+          setConnectionError(`마이크 오류: ${errorMessage}`);
+        }
+        throw micError;
       }
 
       // 5. 데이터 채널 설정 (텍스트 통신용)
@@ -171,9 +207,12 @@ Start by greeting the student and setting up the scenario context in English.`,
       };
 
       // 6. SDP Offer 생성 및 전송
+      console.log("Step 6: Creating SDP offer...");
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      console.log("SDP offer created");
 
+      console.log("Step 7: Sending SDP to OpenAI...");
       const sdpResponse = await fetch(
         "https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17",
         {
@@ -186,13 +225,18 @@ Start by greeting the student and setting up the scenario context in English.`,
         }
       );
 
+      console.log("SDP response status:", sdpResponse.status);
       if (!sdpResponse.ok) {
-        throw new Error("Failed to establish WebRTC connection");
+        const errorText = await sdpResponse.text();
+        console.error("SDP error:", errorText);
+        throw new Error("WebRTC 연결에 실패했습니다");
       }
 
       const answerSdp = await sdpResponse.text();
+      console.log("Step 8: Setting remote description...");
       await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
 
+      console.log("=== Connection successful! ===");
       setIsConnected(true);
     } catch (error) {
       console.error("Connection error:", error);
