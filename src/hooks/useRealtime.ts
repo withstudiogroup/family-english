@@ -25,6 +25,12 @@ export function useRealtime(options: UseRealtimeOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMicrophone, setHasMicrophone] = useState(true);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  const addLog = (message: string) => {
+    console.log(message);
+    setDebugLogs(prev => [...prev.slice(-20), `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
 
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const dataChannel = useRef<RTCDataChannel | null>(null);
@@ -39,25 +45,26 @@ export function useRealtime(options: UseRealtimeOptions) {
 
   const connect = useCallback(async () => {
     setConnectionError(null);
-    console.log("=== Starting connection ===");
+    setDebugLogs([]);
+    addLog("=== 연결 시작 ===");
 
     try {
       // 1. 세션 토큰 가져오기
-      console.log("Step 1: Getting session token...");
+      addLog("1단계: 세션 토큰 요청 중...");
       const tokenResponse = await fetch("/api/realtime/session");
-      console.log("Token response status:", tokenResponse.status);
+      addLog(`토큰 응답: ${tokenResponse.status}`);
 
       if (!tokenResponse.ok) {
         const errorText = await tokenResponse.text();
-        console.error("Token error:", errorText);
+        addLog(`토큰 에러: ${errorText}`);
         throw new Error("세션 토큰을 가져올 수 없습니다");
       }
 
       const sessionData = await tokenResponse.json();
-      console.log("Session data received:", sessionData.id ? "Yes" : "No");
+      addLog(`세션 데이터: ${sessionData.id ? "성공" : "실패"}`);
 
       if (!sessionData.client_secret) {
-        console.error("No client_secret in response:", sessionData);
+        addLog("client_secret 없음!");
         throw new Error("세션 토큰이 올바르지 않습니다");
       }
 
@@ -101,27 +108,27 @@ export function useRealtime(options: UseRealtimeOptions) {
       };
 
       // 4. 마이크 입력 설정
-      console.log("Step 4: Requesting microphone access...");
-      console.log("navigator.mediaDevices available:", !!navigator.mediaDevices);
+      addLog("4단계: 마이크 권한 요청...");
+      addLog(`mediaDevices 지원: ${!!navigator.mediaDevices}`);
 
       try {
         // 먼저 사용 가능한 오디오 장치 확인
         const devices = await navigator.mediaDevices.enumerateDevices();
         const audioInputs = devices.filter(d => d.kind === "audioinput");
-        console.log("Available audio inputs:", audioInputs.length, audioInputs.map(d => d.label || "unnamed"));
+        addLog(`오디오 입력 장치: ${audioInputs.length}개`);
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaStream.current = stream;
         stream.getTracks().forEach((track) => {
-          console.log("Adding audio track:", track.label, track.readyState);
+          addLog(`마이크 트랙: ${track.label || "이름없음"}`);
           pc.addTrack(track, stream);
         });
-        console.log("Microphone connected successfully");
+        addLog("마이크 연결 성공!");
         setHasMicrophone(true);
       } catch (micError: unknown) {
         const errorMessage = micError instanceof Error ? micError.message : String(micError);
         const errorName = micError instanceof Error ? micError.name : "Unknown";
-        console.error("Microphone error:", errorName, errorMessage);
+        addLog(`마이크 에러: ${errorName} - ${errorMessage}`);
         setHasMicrophone(false);
 
         if (errorName === "NotFoundError") {
@@ -207,12 +214,12 @@ Start by greeting the student and setting up the scenario context in English.`,
       };
 
       // 6. SDP Offer 생성 및 전송
-      console.log("Step 6: Creating SDP offer...");
+      addLog("6단계: SDP 오퍼 생성...");
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      console.log("SDP offer created");
+      addLog("SDP 오퍼 생성 완료");
 
-      console.log("Step 7: Sending SDP to OpenAI...");
+      addLog("7단계: OpenAI에 SDP 전송...");
       const sdpResponse = await fetch(
         "https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17",
         {
@@ -225,18 +232,18 @@ Start by greeting the student and setting up the scenario context in English.`,
         }
       );
 
-      console.log("SDP response status:", sdpResponse.status);
+      addLog(`SDP 응답: ${sdpResponse.status}`);
       if (!sdpResponse.ok) {
         const errorText = await sdpResponse.text();
-        console.error("SDP error:", errorText);
+        addLog(`SDP 에러: ${errorText}`);
         throw new Error("WebRTC 연결에 실패했습니다");
       }
 
       const answerSdp = await sdpResponse.text();
-      console.log("Step 8: Setting remote description...");
+      addLog("8단계: 원격 설명 설정...");
       await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
 
-      console.log("=== Connection successful! ===");
+      addLog("=== 연결 성공! ===");
       setIsConnected(true);
     } catch (error) {
       console.error("Connection error:", error);
@@ -315,6 +322,7 @@ Start by greeting the student and setting up the scenario context in English.`,
     messages,
     hasMicrophone,
     connectionError,
+    debugLogs,
     connect,
     disconnect,
     toggleRecording,

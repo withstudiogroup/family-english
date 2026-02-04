@@ -64,6 +64,7 @@ function ChatContent() {
     isAiSpeaking,
     hasMicrophone,
     connectionError,
+    debugLogs,
     connect,
     disconnect,
     toggleRecording,
@@ -227,6 +228,21 @@ function ChatContent() {
               >
                 다시 시도
               </button>
+            )}
+
+            {/* 디버그 로그 표시 */}
+            {debugLogs.length > 0 && (
+              <div className="mt-6 w-full max-w-md px-4">
+                <div
+                  className="p-3 rounded-xl text-xs font-mono overflow-auto max-h-48"
+                  style={{ background: "#1a1a2e", color: "#10b981" }}
+                >
+                  <p className="font-bold mb-2 text-yellow-400">📋 연결 로그:</p>
+                  {debugLogs.map((log, i) => (
+                    <p key={i} className="py-0.5">{log}</p>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         )}
