@@ -66,7 +66,7 @@ export default function DashboardPage() {
   const maxMinutes = Math.max(...weeklyData.map(d => d.minutes), 15);
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-24 bg-cream pb-safe-lg">
+    <div className="min-h-screen pb-28 bg-cream">
       {/* Header */}
       <header className="px-6 pt-8 pb-6 bg-gradient-to-r from-coral to-coral-dark">
         <div className="max-w-2xl mx-auto">
