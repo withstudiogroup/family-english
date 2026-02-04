@@ -89,17 +89,18 @@ export default function Home() {
             가족 4명이 함께 사용하는 영어 학습 플랫폼
           </p>
 
-          {/* Family Avatars - Simplified */}
-          <div className="flex justify-center gap-2">
-            {[1, 2, 3, 4].map((num, index) => (
+          {/* Family Avatars */}
+          <div className="flex justify-center -space-x-2 sm:-space-x-3">
+            {["👨", "👩", "👧", "👦"].map((emoji, index) => (
               <div
-                key={num}
-                className="w-10 sm:w-12 h-10 sm:h-12 rounded-full flex items-center justify-center text-sm sm:text-base font-bold border-2 sm:border-3 border-white text-white"
+                key={index}
+                className="w-10 sm:w-12 h-10 sm:h-12 rounded-full flex items-center justify-center text-lg sm:text-xl border-2 sm:border-3 border-white animate-bounce-soft"
                 style={{
-                  background: index % 2 === 0 ? "var(--coral)" : "var(--teal)",
+                  background: index % 2 === 0 ? "var(--coral-light)" : "var(--teal-light)",
+                  animationDelay: `${index * 0.15}s`
                 }}
               >
-                {num}
+                {emoji}
               </div>
             ))}
           </div>
