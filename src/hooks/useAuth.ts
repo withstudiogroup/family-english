@@ -63,6 +63,42 @@ export function useAuth() {
     setProfile(null);
   };
 
+  const signUp = async (
+    username: string,
+    pinCode: string,
+    accountType: AccountType
+  ) => {
+    // users 테이블에 새 사용자 추가
+    const { data, error } = await supabase
+      .from("users")
+      .insert({
+        username,
+        pin_code: pinCode,
+        account_type: accountType,
+        level: "beginner",
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "23505") {
+        throw new Error("이미 사용 중인 이름이에요");
+      }
+      throw new Error("회원가입에 실패했어요");
+    }
+
+    const user: UserProfile = {
+      id: data.id,
+      username: data.username,
+      account_type: data.account_type,
+      level: data.level,
+    };
+
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    setProfile(user);
+    return user;
+  };
+
   const updateLevel = async (level: UserLevel) => {
     if (!profile) throw new Error("Not authenticated");
 
@@ -83,6 +119,7 @@ export function useAuth() {
     profile,
     loading,
     signIn,
+    signUp,
     signOut,
     updateLevel,
     isAuthenticated: !!profile,
