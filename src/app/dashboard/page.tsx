@@ -1,19 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 type Tab = "home" | "history" | "profile";
 
+const LEVEL_LABELS: Record<string, string> = {
+  beginner: "초급",
+  intermediate: "중급",
+  advanced: "고급",
+};
+
 export default function DashboardPage() {
+  const router = useRouter();
+  const { profile, loading, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("home");
 
-  // Mock user data
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [loading, isAuthenticated, router]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--cream)" }}>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-coral border-t-transparent" />
+      </div>
+    );
+  }
+
+  // User data from profile
   const user = {
-    name: "민준",
-    level: "intermediate",
-    levelLabel: "중급",
-    totalTime: 125, // minutes
+    name: profile?.username || "사용자",
+    level: profile?.level || "beginner",
+    levelLabel: LEVEL_LABELS[profile?.level || "beginner"],
+    totalTime: 125, // TODO: DB에서 가져오기
     totalSessions: 18,
     weeklyStreak: 5,
     thisWeekSessions: 3,
