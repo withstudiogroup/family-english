@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { ArrowLeft, User, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -56,9 +57,7 @@ export default function LoginPage() {
           href="/"
           className="absolute top-4 sm:top-6 left-4 sm:left-6 flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-white shadow-soft text-text-secondary transition-all duration-300 hover:scale-105 pt-safe pl-safe"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ArrowLeft className="w-5 h-5" />
           <span className="font-medium text-sm sm:text-base">돌아가기</span>
         </Link>
 
@@ -67,10 +66,10 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex items-center justify-center w-16 sm:w-20 h-16 sm:h-20 mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-coral-light to-coral">
-              <span className="text-3xl sm:text-4xl">👋</span>
+              <User className="w-8 sm:w-10 h-8 sm:h-10 text-white" strokeWidth={2} />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold mb-2 font-display text-text-primary">
-              다시 만나서 반가워요!
+              다시 만나서 반가워요
             </h1>
             <p className="text-sm sm:text-base text-text-secondary">
               이름과 비밀번호를 입력해주세요
@@ -90,11 +89,9 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="이름을 입력하세요"
-                  className="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base bg-cream border-2 border-transparent text-text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-coral-light"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 pl-11 sm:pl-12 rounded-xl sm:rounded-2xl text-sm sm:text-base bg-cream border-2 border-transparent text-text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-coral-light"
                 />
-                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl">
-                  👤
-                </div>
+                <User className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               </div>
             </div>
 
@@ -111,18 +108,19 @@ export default function LoginPage() {
                     const val = e.target.value.replace(/\D/g, "").slice(0, 4);
                     setPassword(val);
                   }}
-                  placeholder="●●●●"
+                  placeholder="····"
                   inputMode="numeric"
                   pattern="\d{4}"
                   maxLength={4}
-                  className="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-widest bg-cream border-2 border-transparent text-text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-coral-light"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 pl-11 sm:pl-12 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-widest bg-cream border-2 border-transparent text-text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-coral-light"
                 />
+                <Lock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl opacity-60 hover:opacity-100 transition-opacity"
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
 
@@ -144,7 +142,7 @@ export default function LoginPage() {
             {/* Error Message */}
             {error && (
               <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-error/10 text-error animate-slide-down">
-                <span>⚠️</span>
+                <div className="w-1 h-4 bg-error rounded-full" />
                 <span className="text-sm font-medium">{error}</span>
               </div>
             )}
@@ -157,10 +155,7 @@ export default function LoginPage() {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   로그인 중...
                 </span>
               ) : (
@@ -181,7 +176,7 @@ export default function LoginPage() {
         {/* Help Text */}
         <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-center text-text-muted">
           비밀번호를 잊으셨나요?<br />
-          부모님께 말씀해주세요 😊
+          부모님께 말씀해주세요
         </p>
       </main>
     </div>
