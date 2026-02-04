@@ -134,7 +134,7 @@ export default function ScenariosPage() {
       </header>
 
       {/* Scenarios Grid */}
-      <main className="px-4 sm:px-6 py-6 sm:py-8 pb-56 max-w-2xl mx-auto">
+      <main className="px-4 sm:px-6 py-6 sm:py-8 pb-72 max-w-2xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {filteredScenarios.map((scenario, index) => {
             const difficulty = difficultyInfo[scenario.difficulty as keyof typeof difficultyInfo];
