@@ -141,7 +141,7 @@ function ChatContent() {
   };
 
   return (
-    <div className="relative flex flex-col h-screen" style={{ background: "var(--cream)" }}>
+    <div className="relative flex flex-col h-screen bg-cream">
       {/* Header */}
       <header
         className="flex items-center justify-between px-4 py-3 z-20"
@@ -223,7 +223,7 @@ function ChatContent() {
             key={message.id}
             className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}
           >
-            <div className={`max-w-[85%] ${message.role === "user" ? "order-2" : "order-1"}`}>
+            <div className={`max-w-[90%] sm:max-w-[85%] md:max-w-[75%] ${message.role === "user" ? "order-2" : "order-1"}`}>
               {/* Avatar */}
               {message.role === "assistant" && (
                 <div className="flex items-center gap-2 mb-2">
@@ -399,14 +399,8 @@ function ChatContent() {
       )}
 
       {/* Bottom Controls */}
-      <div
-        className="px-4 py-4"
-        style={{
-          background: "white",
-          boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.05)"
-        }}
-      >
-        <div className="flex items-center justify-center gap-4">
+      <div className="px-4 py-4 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
+        <div className="flex items-center justify-center gap-6 sm:gap-4">
           {/* Suggestion Button */}
           <button
             onClick={() => setShowSuggestions(!showSuggestions)}

@@ -65,7 +65,7 @@ export default function DashboardPage() {
   const maxMinutes = Math.max(...weeklyData.map(d => d.minutes), 15);
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: "var(--cream)" }}>
+    <div className="min-h-screen pb-20 sm:pb-24 bg-cream pb-safe-lg">
       {/* Header */}
       <header
         className="px-6 pt-8 pb-6"
@@ -97,7 +97,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {[
               { label: "총 학습 시간", value: `${Math.floor(user.totalTime / 60)}시간 ${user.totalTime % 60}분`, icon: "⏱️" },
               { label: "연속 학습", value: `${user.weeklyStreak}일`, icon: "🔥" },
@@ -105,15 +105,15 @@ export default function DashboardPage() {
             ].map((stat, index) => (
               <div
                 key={index}
-                className="p-3 rounded-2xl text-center"
+                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl text-center"
                 style={{
                   background: "rgba(255, 255, 255, 0.15)",
                   backdropFilter: "blur(10px)"
                 }}
               >
-                <span className="text-2xl mb-1 block">{stat.icon}</span>
-                <p className="text-white font-bold text-lg">{stat.value}</p>
-                <p className="text-white/70 text-xs">{stat.label}</p>
+                <span className="text-xl sm:text-2xl mb-0.5 sm:mb-1 block">{stat.icon}</span>
+                <p className="text-white font-bold text-sm sm:text-lg">{stat.value}</p>
+                <p className="text-white/70 text-[10px] sm:text-xs">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -294,13 +294,7 @@ export default function DashboardPage() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 px-6 py-4"
-        style={{
-          background: "white",
-          boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.05)"
-        }}
-      >
+      <nav className="fixed bottom-0 left-0 right-0 px-4 sm:px-6 py-3 sm:py-4 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
         <div className="max-w-2xl mx-auto flex justify-around">
           {[
             { id: "home", icon: "🏠", label: "홈", href: "/dashboard" },

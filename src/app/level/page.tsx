@@ -65,7 +65,7 @@ export default function LevelPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: "var(--cream)" }}>
+    <div className="relative min-h-screen overflow-hidden bg-cream">
       {/* Decorative Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
@@ -94,7 +94,7 @@ export default function LevelPage() {
       </div>
 
       {/* Main Content */}
-      <main className="relative z-10 flex flex-col min-h-screen px-6 py-16 max-w-2xl mx-auto">
+      <main className="relative z-10 flex flex-col min-h-screen px-4 sm:px-6 py-12 sm:py-16 max-w-2xl mx-auto pt-safe pb-safe-lg">
         {/* Header */}
         <div className="text-center mb-12 animate-slide-down">
           <div
@@ -120,20 +120,20 @@ export default function LevelPage() {
         </div>
 
         {/* Level Cards */}
-        <div className="space-y-5 mb-10">
+        <div className="space-y-4 sm:space-y-5 mb-8 sm:mb-10">
           {levels.map((level, index) => (
             <button
               key={level.id}
               onClick={() => setSelectedLevel(level.id as Level)}
-              className="w-full p-6 rounded-3xl text-left transition-all duration-300 animate-slide-up"
+              className="w-full p-5 sm:p-6 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 animate-slide-up"
               style={{
                 background: selectedLevel === level.id ? level.bgColor : "white",
                 boxShadow: selectedLevel === level.id
                   ? `0 8px 30px ${level.color}40`
                   : "var(--shadow-soft)",
                 border: selectedLevel === level.id
-                  ? `3px solid ${level.color}`
-                  : "3px solid transparent",
+                  ? `2px solid ${level.color}`
+                  : "2px solid transparent",
                 transform: selectedLevel === level.id ? "scale(1.02)" : "scale(1)",
                 animationDelay: `${index * 0.1}s`
               }}

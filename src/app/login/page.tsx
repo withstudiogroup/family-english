@@ -42,84 +42,46 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: "var(--cream)" }}>
+    <div className="relative min-h-screen overflow-hidden bg-cream">
       {/* Decorative Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute -top-40 -left-40 w-96 h-96 rounded-full animate-float"
-          style={{
-            background: "linear-gradient(135deg, var(--coral-light) 0%, var(--coral) 100%)",
-            opacity: 0.12,
-          }}
-        />
-        <div
-          className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full animate-float"
-          style={{
-            background: "linear-gradient(135deg, var(--teal-light) 0%, var(--teal) 100%)",
-            opacity: 0.1,
-            animationDelay: "1.5s"
-          }}
-        />
+        <div className="absolute -top-32 sm:-top-40 -left-32 sm:-left-40 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-gradient-to-br from-coral-light to-coral opacity-12 animate-float" />
+        <div className="absolute -bottom-24 sm:-bottom-32 -right-24 sm:-right-32 w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-br from-teal-light to-teal opacity-10 animate-float" style={{ animationDelay: "1.5s" }} />
       </div>
 
       {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-20">
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 py-16 sm:py-20 pt-safe pb-safe">
         {/* Back Button */}
         <Link
           href="/"
-          className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 hover:scale-105"
-          style={{
-            background: "white",
-            boxShadow: "var(--shadow-soft)",
-            color: "var(--text-secondary)"
-          }}
+          className="absolute top-4 sm:top-6 left-4 sm:left-6 flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-white shadow-soft text-text-secondary transition-all duration-300 hover:scale-105 pt-safe pl-safe"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="font-medium">돌아가기</span>
+          <span className="font-medium text-sm sm:text-base">돌아가기</span>
         </Link>
 
         {/* Login Card */}
-        <div
-          className="w-full max-w-md p-8 rounded-3xl animate-scale-in"
-          style={{
-            background: "white",
-            boxShadow: "var(--shadow-medium)"
-          }}
-        >
+        <div className="w-full max-w-md p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white shadow-[0_8px_30px_rgba(255,138,101,0.2)] animate-scale-in">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div
-              className="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-2xl"
-              style={{
-                background: "linear-gradient(135deg, var(--coral-light) 0%, var(--coral) 100%)",
-              }}
-            >
-              <span className="text-4xl">👋</span>
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-16 sm:w-20 h-16 sm:h-20 mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-coral-light to-coral">
+              <span className="text-3xl sm:text-4xl">👋</span>
             </div>
-            <h1
-              className="text-2xl font-bold mb-2"
-              style={{
-                fontFamily: "var(--font-display)",
-                color: "var(--text-primary)"
-              }}
-            >
+            <h1 className="text-xl sm:text-2xl font-bold mb-2 font-display text-text-primary">
               다시 만나서 반가워요!
             </h1>
-            <p style={{ color: "var(--text-secondary)" }}>
+            <p className="text-sm sm:text-base text-text-secondary">
               이름과 비밀번호를 입력해주세요
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Username Input */}
             <div>
-              <label
-                className="block text-sm font-medium mb-2"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <label className="block text-sm font-medium mb-2 text-text-primary">
                 이름
               </label>
               <div className="relative">
@@ -128,18 +90,9 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="이름을 입력하세요"
-                  className="w-full px-5 py-4 rounded-2xl text-base transition-all duration-300 focus:outline-none focus:ring-2"
-                  style={{
-                    background: "var(--cream)",
-                    border: "2px solid transparent",
-                    color: "var(--text-primary)",
-                    // @ts-ignore
-                    "--tw-ring-color": "var(--coral-light)"
-                  }}
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base bg-cream border-2 border-transparent text-text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-coral-light"
                 />
-                <div
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xl"
-                >
+                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl">
                   👤
                 </div>
               </div>
@@ -147,10 +100,7 @@ export default function LoginPage() {
 
             {/* Password Input */}
             <div>
-              <label
-                className="block text-sm font-medium mb-2"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <label className="block text-sm font-medium mb-2 text-text-primary">
                 비밀번호 (숫자 4자리)
               </label>
               <div className="relative">
@@ -165,30 +115,23 @@ export default function LoginPage() {
                   inputMode="numeric"
                   pattern="\d{4}"
                   maxLength={4}
-                  className="w-full px-5 py-4 rounded-2xl text-base tracking-widest transition-all duration-300 focus:outline-none focus:ring-2"
-                  style={{
-                    background: "var(--cream)",
-                    border: "2px solid transparent",
-                    color: "var(--text-primary)",
-                    // @ts-ignore
-                    "--tw-ring-color": "var(--coral-light)"
-                  }}
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-widest bg-cream border-2 border-transparent text-text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-coral-light"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xl opacity-60 hover:opacity-100 transition-opacity"
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl opacity-60 hover:opacity-100 transition-opacity"
                 >
                   {showPassword ? "🙈" : "👁️"}
                 </button>
               </div>
 
               {/* Password Dots Indicator */}
-              <div className="flex justify-center gap-3 mt-4">
+              <div className="flex justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
                 {[0, 1, 2, 3].map((index) => (
                   <div
                     key={index}
-                    className="w-3 h-3 rounded-full transition-all duration-300"
+                    className="w-3 sm:w-4 h-3 sm:h-4 rounded-full transition-all duration-300"
                     style={{
                       background: index < password.length ? "var(--coral)" : "var(--cream-dark)",
                       transform: index < password.length ? "scale(1.2)" : "scale(1)"
@@ -200,13 +143,7 @@ export default function LoginPage() {
 
             {/* Error Message */}
             {error && (
-              <div
-                className="flex items-center gap-2 px-4 py-3 rounded-xl animate-slide-down"
-                style={{
-                  background: "rgba(229, 115, 115, 0.1)",
-                  color: "var(--error)"
-                }}
-              >
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-error/10 text-error animate-slide-down">
                 <span>⚠️</span>
                 <span className="text-sm font-medium">{error}</span>
               </div>
@@ -216,11 +153,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-4 rounded-2xl font-bold text-white text-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{
-                background: "linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%)",
-                boxShadow: "0 4px 20px rgba(255, 138, 101, 0.4)"
-              }}
+              className="w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-white text-base sm:text-lg bg-gradient-to-r from-coral to-coral-dark shadow-[0_4px_20px_rgba(255,138,101,0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -236,31 +169,17 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px" style={{ background: "var(--cream-dark)" }} />
-            <span className="text-sm" style={{ color: "var(--text-muted)" }}>또는</span>
-            <div className="flex-1 h-px" style={{ background: "var(--cream-dark)" }} />
-          </div>
-
           {/* Sign Up Link */}
           <Link
             href="/signup"
-            className="block w-full py-4 rounded-2xl font-bold text-center transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-            style={{
-              background: "var(--cream)",
-              color: "var(--coral)",
-            }}
+            className="block w-full mt-4 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-center bg-cream text-coral transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           >
             새로 시작하기 (회원가입)
           </Link>
         </div>
 
         {/* Help Text */}
-        <p
-          className="mt-8 text-sm text-center"
-          style={{ color: "var(--text-muted)" }}
-        >
+        <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-center text-text-muted">
           비밀번호를 잊으셨나요?<br />
           부모님께 말씀해주세요 😊
         </p>

@@ -62,7 +62,7 @@ export default function ScenariosPage() {
   };
 
   return (
-    <div className="relative min-h-screen" style={{ background: "var(--cream)" }}>
+    <div className="relative min-h-screen bg-cream">
       {/* Header */}
       <header
         className="sticky top-0 z-20 px-6 py-4"
@@ -126,8 +126,8 @@ export default function ScenariosPage() {
       </header>
 
       {/* Scenarios Grid */}
-      <main className="px-6 py-8 pb-36 max-w-2xl mx-auto">
-        <div className="grid grid-cols-2 gap-5">
+      <main className="px-4 sm:px-6 py-6 sm:py-8 pb-32 sm:pb-36 max-w-2xl mx-auto pb-safe-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {filteredScenarios.map((scenario, index) => {
             const difficulty = difficultyInfo[scenario.difficulty as keyof typeof difficultyInfo];
             const isSelected = selectedScenario === scenario.id;
@@ -198,12 +198,7 @@ export default function ScenariosPage() {
       </main>
 
       {/* Bottom Action Bar */}
-      <div
-        className="fixed bottom-0 left-0 right-0 p-6"
-        style={{
-          background: "linear-gradient(to top, var(--cream) 80%, transparent)"
-        }}
-      >
+      <div className="fixed bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-cream via-cream/80 to-transparent pb-safe">
         <div className="max-w-2xl mx-auto">
           {/* Selected Scenario Preview */}
           {selectedScenario && (

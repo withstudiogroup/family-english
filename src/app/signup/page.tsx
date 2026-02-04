@@ -57,54 +57,33 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: "var(--cream)" }}>
+    <div className="relative min-h-screen overflow-hidden bg-cream">
       {/* Decorative Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full animate-float"
-          style={{
-            background: "linear-gradient(135deg, var(--teal-light) 0%, var(--teal) 100%)",
-            opacity: 0.12,
-          }}
-        />
-        <div
-          className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full animate-float"
-          style={{
-            background: "linear-gradient(135deg, var(--sunny-light) 0%, var(--sunny) 100%)",
-            opacity: 0.1,
-            animationDelay: "1.5s"
-          }}
-        />
+        <div className="absolute -top-32 sm:-top-40 -right-32 sm:-right-40 w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-gradient-to-br from-teal-light to-teal opacity-12 animate-float" />
+        <div className="absolute -bottom-24 sm:-bottom-32 -left-24 sm:-left-32 w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-br from-sunny-light to-sunny opacity-10 animate-float" style={{ animationDelay: "1.5s" }} />
       </div>
 
       {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-20">
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 py-16 sm:py-20 pt-safe pb-safe">
         {/* Back Button */}
         <Link
           href="/"
-          className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 hover:scale-105"
-          style={{
-            background: "white",
-            boxShadow: "var(--shadow-soft)",
-            color: "var(--text-secondary)"
-          }}
+          className="absolute top-4 sm:top-6 left-4 sm:left-6 flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-white shadow-soft text-text-secondary transition-all duration-300 hover:scale-105 pt-safe pl-safe"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="font-medium">돌아가기</span>
+          <span className="font-medium text-sm sm:text-base">돌아가기</span>
         </Link>
 
         {/* Progress Indicator */}
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-1 sm:gap-2 mb-6 sm:mb-8">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300"
+              <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-bold transition-all duration-300"
                 style={{
-                  background: step >= s
-                    ? "linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%)"
-                    : "white",
+                  background: step >= s ? "linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%)" : "white",
                   color: step >= s ? "white" : "var(--text-muted)",
                   boxShadow: step >= s ? "0 4px 15px rgba(255, 138, 101, 0.3)" : "var(--shadow-soft)"
                 }}
@@ -112,11 +91,8 @@ export default function SignupPage() {
                 {step > s ? "✓" : s}
               </div>
               {s < 3 && (
-                <div
-                  className="w-8 h-1 mx-1 rounded-full transition-all duration-300"
-                  style={{
-                    background: step > s ? "var(--coral)" : "var(--cream-dark)"
-                  }}
+                <div className="w-6 sm:w-8 h-1 mx-0.5 sm:mx-1 rounded-full transition-all duration-300"
+                  style={{ background: step > s ? "var(--coral)" : "var(--cream-dark)" }}
                 />
               )}
             </div>
@@ -124,13 +100,7 @@ export default function SignupPage() {
         </div>
 
         {/* Signup Card */}
-        <div
-          className="w-full max-w-md p-8 rounded-3xl animate-scale-in"
-          style={{
-            background: "white",
-            boxShadow: "var(--shadow-medium)"
-          }}
-        >
+        <div className="w-full max-w-md p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white shadow-[0_8px_30px_rgba(255,138,101,0.2)] animate-scale-in">
           {/* Step 1: Name */}
           {step === 1 && (
             <div className="animate-fade-in">
@@ -488,13 +458,9 @@ export default function SignupPage() {
         </div>
 
         {/* Already have account */}
-        <p className="mt-8 text-sm" style={{ color: "var(--text-muted)" }}>
+        <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-text-muted">
           이미 계정이 있나요?{" "}
-          <Link
-            href="/login"
-            className="font-bold underline"
-            style={{ color: "var(--coral)" }}
-          >
+          <Link href="/login" className="font-bold underline text-coral">
             로그인
           </Link>
         </p>
