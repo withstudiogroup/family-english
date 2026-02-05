@@ -24,8 +24,8 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -44,82 +44,106 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
       {/* Header */}
-      <header className="px-6 pt-12 pb-10 bg-gradient-to-br from-primary via-primary-dark to-secondary-dark">
-        <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-between mb-8">
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600">
+        <div className="max-w-2xl mx-auto px-5 pt-10 pb-24 sm:pt-12 sm:pb-28">
+          {/* 인사말 */}
+          <div className="flex items-start justify-between mb-8">
             <div>
-              <p className="text-white/70 text-sm mb-2">안녕하세요</p>
-              <h1 className="text-3xl font-bold text-white">{user.name}님</h1>
+              <p className="text-indigo-200 text-sm mb-1">안녕하세요</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">{user.name}님</h1>
             </div>
-            <span className="px-4 py-2 rounded-full text-sm font-medium bg-white/20 text-white">
+            <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-sm">
               {user.levelLabel}
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          {/* 통계 카드 */}
+          <div className="grid grid-cols-3 gap-3">
             {[
               { label: "총 학습", value: `${Math.floor(user.totalTime / 60)}시간`, icon: Clock },
               { label: "연속", value: `${user.weeklyStreak}일`, icon: Flame },
               { label: "이번 주", value: `${user.thisWeekSessions}회`, icon: BookMarked },
             ].map((stat, i) => (
-              <div key={i} className="p-4 rounded-2xl text-center bg-white/15 backdrop-blur">
-                <stat.icon className="w-6 h-6 mb-2 mx-auto text-white" strokeWidth={1.5} />
-                <p className="text-white font-bold text-xl">{stat.value}</p>
-                <p className="text-white/70 text-xs mt-1">{stat.label}</p>
+              <div key={i} className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 text-center">
+                <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-white/90" strokeWidth={1.5} />
+                <p className="text-lg sm:text-xl font-bold text-white">{stat.value}</p>
+                <p className="text-[11px] sm:text-xs text-indigo-200 mt-0.5">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="px-6 -mt-5 max-w-lg mx-auto">
-        {/* 대화 시작 버튼 */}
+      {/* 메인 콘텐츠 */}
+      <div className="max-w-2xl mx-auto px-5 -mt-16 pb-28">
+        {/* CTA 버튼 */}
         <Link
           href="/scenarios"
-          className="btn-primary btn-lg w-full flex items-center justify-center gap-4 mb-8 shadow-xl"
+          className="flex items-center justify-center gap-3 w-full py-4 sm:py-5 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow mb-6"
         >
-          <Mic className="w-7 h-7" />
-          영어 대화 시작하기
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+            <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          </div>
+          <span className="text-base sm:text-lg font-bold text-gray-800">영어 대화 시작하기</span>
+          <ChevronRight className="w-5 h-5 text-gray-400" />
         </Link>
 
         {/* 최근 대화 */}
-        <div className="card p-6 rounded-2xl">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="font-bold text-lg text-text-primary">최근 대화</h3>
-            <Link href="/history" className="text-sm text-primary font-medium">전체 보기</Link>
+        <div className="bg-white rounded-2xl shadow-md p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800">최근 대화</h3>
+            <Link href="/history" className="text-sm text-indigo-500 font-medium hover:underline">
+              전체 보기
+            </Link>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {recentSessions.map((session) => (
-              <div key={session.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Mic className="w-6 h-6 text-primary" />
+              <div
+                key={session.id}
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                  <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" />
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-text-primary">{session.scenario}</p>
-                  <p className="text-sm text-text-muted mt-1">{session.date} · {session.duration}분</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base truncate">{session.scenario}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{session.date} · {session.duration}분</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-text-muted" />
+                <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
               </div>
             ))}
           </div>
-        </div>
-      </main>
 
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 px-6 py-5 bg-white border-t border-gray-100 pb-safe">
-        <div className="max-w-lg mx-auto flex justify-around">
+          {recentSessions.length === 0 && (
+            <div className="text-center py-8 text-gray-400">
+              <Mic className="w-10 h-10 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">아직 대화 기록이 없어요</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 하단 네비게이션 */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom">
+        <div className="max-w-2xl mx-auto px-4 py-2 flex justify-around">
           {[
             { id: "home", icon: Home, label: "홈", href: "/dashboard", active: true },
-            { id: "scenarios", icon: Drama, label: "시나리오", href: "/scenarios" },
-            { id: "history", icon: BookOpen, label: "기록", href: "/history" },
-            { id: "profile", icon: User, label: "프로필", href: "/profile" },
+            { id: "scenarios", icon: Drama, label: "시나리오", href: "/scenarios", active: false },
+            { id: "history", icon: BookOpen, label: "기록", href: "/history", active: false },
+            { id: "profile", icon: User, label: "프로필", href: "/profile", active: false },
           ].map((item) => (
-            <Link key={item.id} href={item.href} className="flex flex-col items-center gap-1.5">
-              <item.icon className={`w-6 h-6 ${item.active ? "text-primary" : "text-text-muted"}`} strokeWidth={1.5} />
-              <span className={`text-xs ${item.active ? "text-primary font-semibold" : "text-text-muted"}`}>{item.label}</span>
+            <Link
+              key={item.id}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+                item.active ? "text-indigo-500" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <item.icon className="w-6 h-6" strokeWidth={item.active ? 2 : 1.5} />
+              <span className={`text-[11px] ${item.active ? "font-semibold" : "font-medium"}`}>{item.label}</span>
             </Link>
           ))}
         </div>

@@ -1,0 +1,20 @@
+[     624ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[     630ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[  812545ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[  812620ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[  844182ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[  844227ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[  977429ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[  977439ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[ 1003942ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[ 1003948ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[ 1008026ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[ 1008031ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[ 1016578ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[ 1016583ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[ 1117289ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[ 1117349ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[ 1143976ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[ 1144056ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0
+[ 1215750ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[ 1215857ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/level:0

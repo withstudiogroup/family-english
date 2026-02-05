@@ -1,0 +1,3 @@
+[     806ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://midkch.com/icon-192.png:0
+[     807ms] [WARNING] Error while trying to use the following icon from the Manifest: https://midkch.com/icon-192.png (Download error or resource isn't a valid image) @ https://midkch.com/login:0
+[   83504ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://gtvhfmxdgcxbwttnvgud.supabase.co/auth/v1/token?grant_type=password:0

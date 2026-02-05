@@ -1,0 +1,15 @@
+[    2863ms] [ERROR] ClientFetchError: Failed to fetch. Read more at https://errors.authjs.dev#autherror
+    at fetchData (webpack-internal:///(app-pages-browser)/./node_modules/next-auth/lib/client.js:49:22)
+    at async getSession (webpack-internal:///(app-pages-browser)/./node_modules/next-auth/react.js:121:21)
+    at async __NEXTAUTH._getSession (webpack-internal:///(app-pages-browser)/./node_modules/next-auth/react.js:283:43) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/app-index.js:32
+[    2863ms] [ERROR] ClientFetchError: Failed to fetch. Read more at https://errors.authjs.dev#autherror
+    at fetchData (webpack-internal:///(app-pages-browser)/./node_modules/next-auth/lib/client.js:49:22)
+    at async getSession (webpack-internal:///(app-pages-browser)/./node_modules/next-auth/react.js:121:21)
+    at async __NEXTAUTH._getSession (webpack-internal:///(app-pages-browser)/./node_modules/next-auth/react.js:283:43) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/app-index.js:32
+[    3870ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[    3876ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/:0
+[   18930ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ http://localhost:3005/_next/static/chunks/ed7db_next_dist_a28737fe._.js:2297
+[   19028ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[   19048ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/login:0
+[   39274ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3005/icon-192.png:0
+[   39281ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3005/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3005/signup:0
