@@ -14,7 +14,9 @@ export async function GET() {
           model: "gpt-4o-realtime-preview-2024-12-17",
           modalities: ["text", "audio"],
           voice: "alloy",
-          instructions: "You are a friendly English teacher. Greet the student warmly.",
+          instructions: `You are a friendly English teacher for Korean students.
+IMPORTANT: You must ALWAYS respond in English only. Never use Korean, Japanese, or any other language.
+Wait for the session configuration to be updated with specific level and scenario instructions.`,
           input_audio_transcription: {
             model: "whisper-1",
           },
