@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useConversation } from "@/hooks/useConversation";
+import type { Conversation } from "@/lib/supabase/types";
 import { Home, Drama, BookOpen, User, Clock, Flame, BookMarked, Mic, ChevronRight, Loader2 } from "lucide-react";
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -12,15 +14,75 @@ const LEVEL_LABELS: Record<string, string> = {
   advanced: "고급",
 };
 
+const scenarioNames: Record<string, string> = {
+  "fast-food": "패스트푸드 주문",
+  "cafe-order": "카페 주문하기",
+  "self-intro": "자기소개하기",
+  "family-intro": "가족 소개하기",
+  "daily-routine": "하루 일과 말하기",
+  "hobby-talk": "취미 이야기하기",
+  "ask-directions": "길 묻고 답하기",
+  "shopping": "쇼핑하기",
+  "free": "자유 대화",
+};
+
 export default function DashboardPage() {
   const router = useRouter();
   const { profile, loading, isAuthenticated } = useAuth();
+  const { getConversations, getLearningStats } = useConversation();
+
+  const [stats, setStats] = useState<{
+    total_time_seconds: number;
+    total_sessions: number;
+    current_streak: number;
+  } | null>(null);
+  const [recentConversations, setRecentConversations] = useState<Conversation[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push("/login");
     }
   }, [loading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (profile && !dataLoaded) {
+      setDataLoaded(true);
+      loadData();
+    }
+  }, [profile, dataLoaded]);
+
+  const loadData = async () => {
+    if (!profile) return;
+
+    const [statsData, conversationsData] = await Promise.all([
+      getLearningStats(profile.id),
+      getConversations(profile.id),
+    ]);
+
+    if (statsData) {
+      setStats(statsData);
+    }
+    setRecentConversations(conversationsData.slice(0, 3));
+  };
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) return `${hours}시간`;
+    return `${minutes}분`;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return "오늘";
+    if (days === 1) return "어제";
+    return `${days}일 전`;
+  };
 
   if (loading) {
     return (
@@ -30,18 +92,10 @@ export default function DashboardPage() {
     );
   }
 
-  const user = {
-    name: profile?.username || "사용자",
-    levelLabel: LEVEL_LABELS[profile?.level || "beginner"],
-    totalTime: 125,
-    weeklyStreak: 5,
-    thisWeekSessions: 3,
-  };
-
-  const recentSessions = [
-    { id: 1, scenario: "패스트푸드 주문하기", date: "오늘", duration: 8 },
-    { id: 2, scenario: "자기소개하기", date: "어제", duration: 12 },
-  ];
+  const totalMinutes = Math.floor((stats?.total_time_seconds || 0) / 60);
+  const displayTime = totalMinutes >= 60
+    ? `${Math.floor(totalMinutes / 60)}시간`
+    : `${totalMinutes}분`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
@@ -52,19 +106,21 @@ export default function DashboardPage() {
           <div className="flex items-start justify-between mb-8">
             <div>
               <p className="text-indigo-200 text-sm mb-1">안녕하세요</p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">{user.name}님</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                {profile?.username || "사용자"}님
+              </h1>
             </div>
             <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-sm">
-              {user.levelLabel}
+              {LEVEL_LABELS[profile?.level || "beginner"]}
             </span>
           </div>
 
           {/* 통계 카드 */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "총 학습", value: `${Math.floor(user.totalTime / 60)}시간`, icon: Clock },
-              { label: "연속", value: `${user.weeklyStreak}일`, icon: Flame },
-              { label: "이번 주", value: `${user.thisWeekSessions}회`, icon: BookMarked },
+              { label: "총 학습", value: displayTime, icon: Clock },
+              { label: "연속", value: `${stats?.current_streak || 0}일`, icon: Flame },
+              { label: "총 대화", value: `${stats?.total_sessions || 0}회`, icon: BookMarked },
             ].map((stat, i) => (
               <div key={i} className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 text-center">
                 <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 text-white/90" strokeWidth={1.5} />
@@ -99,25 +155,30 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="space-y-3">
-            {recentSessions.map((session) => (
-              <div
-                key={session.id}
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
-              >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                  <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base truncate">{session.scenario}</p>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{session.date} · {session.duration}분</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-              </div>
-            ))}
-          </div>
-
-          {recentSessions.length === 0 && (
+          {recentConversations.length > 0 ? (
+            <div className="space-y-3">
+              {recentConversations.map((conv) => (
+                <Link
+                  key={conv.id}
+                  href={`/history/${conv.id}`}
+                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                    <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-800 text-sm sm:text-base truncate">
+                      {scenarioNames[conv.scenario_id] || conv.scenario_id}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                      {formatDate(conv.started_at)} · {Math.floor(conv.duration_seconds / 60)}분
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                </Link>
+              ))}
+            </div>
+          ) : (
             <div className="text-center py-8 text-gray-400">
               <Mic className="w-10 h-10 mx-auto mb-2 opacity-50" />
               <p className="text-sm">아직 대화 기록이 없어요</p>

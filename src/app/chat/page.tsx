@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useAuth } from "@/hooks/useAuth";
+import { useConversation } from "@/hooks/useConversation";
 import { ArrowLeft, Mic, MicOff, Languages, Loader2 } from "lucide-react";
 
 type Message = {
@@ -19,12 +20,16 @@ const scenarioNames: Record<string, string> = {
   "fast-food": "패스트푸드 주문",
   "cafe-order": "카페 주문",
   "self-intro": "자기소개",
+  "family-intro": "가족 소개하기",
+  "daily-routine": "하루 일과 말하기",
+  "hobby-talk": "취미 이야기하기",
   "ask-directions": "길 묻기",
   "shopping": "쇼핑하기",
   "free": "자유 대화",
 };
 
 function ChatContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const scenario = searchParams.get("scenario") || "free";
   const { profile } = useAuth();
@@ -32,7 +37,17 @@ function ChatContent() {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [translatingId, setTranslatingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const conversationIdRef = useRef<string | null>(null);
+  const startTimeRef = useRef<Date>(new Date());
+  const {
+    startConversation,
+    saveMessages,
+    endConversation,
+    updateLearningStats,
+  } = useConversation();
 
   const handleMessage = useCallback((message: { id: string; role: "user" | "assistant"; content: string; timestamp: Date }) => {
     setMessages(prev => [...prev, message as Message]);
@@ -61,7 +76,15 @@ function ChatContent() {
   useEffect(() => {
     if (hasConnected.current) return;
     hasConnected.current = true;
+    startTimeRef.current = new Date();
     connect();
+
+    if (profile) {
+      startConversation(profile.id, scenario, level).then((id) => {
+        conversationIdRef.current = id;
+      });
+    }
+
     return () => {
       disconnect();
       hasConnected.current = false;
@@ -88,6 +111,38 @@ function ChatContent() {
       console.error("Translation failed:", error);
     }
     setTranslatingId(null);
+  };
+
+  const handleEndChat = async () => {
+    if (saving) return;
+    setSaving(true);
+
+    try {
+      disconnect();
+
+      if (profile && conversationIdRef.current && messages.length > 0) {
+        const duration = Math.floor(
+          (new Date().getTime() - startTimeRef.current.getTime()) / 1000
+        );
+
+        await saveMessages(
+          conversationIdRef.current,
+          messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+            translation: m.translation,
+          }))
+        );
+
+        await endConversation(conversationIdRef.current, duration);
+        await updateLearningStats(profile.id, duration);
+      }
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Failed to save conversation:", error);
+      router.push("/dashboard");
+    }
   };
 
   const formatTime = (date: Date) => {
@@ -254,13 +309,21 @@ function ChatContent() {
             </button>
           </div>
 
-          {/* Exit Link */}
-          <Link
-            href="/dashboard"
-            className="block text-center text-sm text-gray-400 hover:text-gray-600"
+          {/* Exit Button */}
+          <button
+            onClick={handleEndChat}
+            disabled={saving}
+            className="block w-full text-center text-sm text-gray-400 hover:text-gray-600 disabled:opacity-50"
           >
-            대화 종료
-          </Link>
+            {saving ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                저장 중...
+              </span>
+            ) : (
+              "대화 종료"
+            )}
+          </button>
         </div>
       </div>
     </div>
